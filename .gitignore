@@ -1,0 +1,12 @@
+var
+venv
+tmp
+log
+static
+*.log
+*.pyc
+*.db
+.DS_Store
+!.gitkeep
+!log/.gitkeep
+config.ini
