@@ -1,0 +1,20 @@
+{% extends "editor.html" %}
+
+
+{% block head %}
+    {{ super() }}
+    <script>
+        saveEditsUrl = "{{ url_for('blog.admin_add_post')}}" 
+    </script>
+{% endblock %}
+
+{% block title %}
+    Add new post
+{% endblock %}
+
+
+{% block editorTitle %}Add a new post to the blog{% endblock %}
+{% block editorSubtitle %}Please fill in all the required fields. <br>Any unsaved change will be lost{% endblock %}
+
+
+{% block actionOnPost %}Add{% endblock %}

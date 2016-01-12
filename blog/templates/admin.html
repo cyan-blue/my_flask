@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('.static', filename='css/admin.css') }}" />
+    
+    <script>
+        baseAdminUrl = "{{ url_for('blog.admin_panel') }}"
+        baseAdminDeleteUrl = "{{ url_for('blog.admin_delete_post', post_id = -1) }}"
+    </script>
+{% endblock %}
+
+{% block title %}Admin Panel{% endblock %}
+
+
+{% block content %}
+<a href="{{url_for('blog.admin_add_post')}}" class="adminAddPostLink"><div class="adminAddPost">Add a post</div></a>
+<br>
+
+<h2>Posts</h2>
+<table class="adminPostsTable">
+    <tr>
+        <th>Id</th>
+        <th>Title</th>
+        <th>Date</th>
+        <th>Visible</th>
+        <th>Edit</th>
+        <th>Delete</th>
+    </tr>
+    {% for post in posts %}
+        <tr>
+            <td>{{ post.id }}</td>
+            <td><a href="{{url_for('blog.view_post', post_id = post.id, post_url = post.url)}}" >{{ post.title }}</a></td>
+            <td>{{ post.time.strftime('%d %b, %H:%M') }}</td>
+            <td>{{ post.visible }}</td>
+            <td><a href="{{url_for('blog.admin_edit_post', post_id=post.id)}}"class="adminEditButton">E</a></td>
+            <td><div class="adminDeleteButton" post-id="{{ post.id }}" >X</div></td>
+        </tr>
+    {% else %}
+        <tr >
+            <td colspan="6">No post found</td>
+        </tr>
+    {% endfor %}
+</table>
+<br>
+
+<a href="{{url_for('blog.admin_logout')}}">Logout</a>
+<script src="{{ url_for('.static', filename='js/admin.js') }}"></script>
+
+{% endblock %}
