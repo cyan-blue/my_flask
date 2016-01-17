@@ -1,44 +1,80 @@
 import os
+_basedir = os.path.abspath(os.path.dirname(__file__))
 
-basedir = os.path.abspath(os.path.dirname(__file__))
 
+class BaseConfig(object):
+    APP_RUNNING_MODE = ""
 
-class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY') or '\x03d\xf4\x95J\x15\xa4B\xfb\xc0\xaf \xd1A[j$}\x18\x16a\xe7\xd0\xec'
-    SSL_DISABLE = False
+    DEBUG = False
+    TESTING = False
+    SECRET_KEY = os.environ.get('SECRET_KEY') or '323'
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_RECORD_QUERIES = True
-    BABEL_DEFAULT_LOCALE = 'zh'
+    FLATPAGES_EXTENSION = '.md'
+    MAIL_SERVER = 'smtp.163.com'
+    MAIL_PORT = 25
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = '18120112004@163.com'
+    MAIL_PASSWORD = 'hy1314'
+
+    BOWHEAD_MAIL_SUBJECT_PREFIX = '[Hello]'
+    BOWHEAD_MAIL_SENDER = 'Lynn <18120112004@163.com>'
+
+
+    MYSQL_USE_UNICODE = True
+    MYSQL_CHARSET = 'utf-8'
+
+    CSRF_ENABLED = True
+    CSRF_SESSION_KEY = os.environ.get('SECRET_KEY') or "guess what is"
 
     @staticmethod
     def init_app(app):
         pass
 
 
-class DevelopmentConfig(Config):
+class DevelopmentConfig(BaseConfig):
+    APP_RUNNING_MODE = "development"
+
     DEBUG = True
+    TESTING = False
+    API_DEV_ENABLE = True
+    API_ADMIN_ENABLE = True
+    CELERY_ASYNC_ENABLE = True
+    CELERY_BROKER_URL = 'amqp://guest@localhost//'
+    SQLALCHEMY_DATABASE_URI = 'mysql://data:data@localhost/gululu?charset=utf8&use_unicode=0'
 
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
-                              'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
-    print SQLALCHEMY_DATABASE_URI
+    @staticmethod
+    def init_app(app):
+        pass
 
-class TestingConfig(Config):
+
+class TestConfig(BaseConfig):
+    APP_RUNNING_MODE = "test"
+
+    DEBUG = True
     TESTING = True
-    SERVER_NAME = 'localhost:5000'
-    SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or \
-                              'sqlite:///' + os.path.join(basedir, 'data-test.sqlite')
-    WTF_CSRF_ENABLED = False
+    API_DEV_ENABLE = True
+    API_ADMIN_ENABLE = True
+    CSRF_ENABLED = False
+    CELERY_ASYNC_ENABLE = False
+    SERVER_NAME = "test.bowhead.com"
+    SQLALCHEMY_DATABASE_URI = 'sqlite://'  # using sqlite memory
+
+    SERVER_NAME = "127.0.0.0:8000"
+    VAULT_REOURCE_SERVER_NAME = '127.0.0.1'
+    VAULT_REOURCE_SERVER_PORT = '9000'
 
 
-class Production(Config):
-    DEBUG=True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
-                              'postgresql://ray:?@localhost/blog-db'
+    @staticmethod
+    def init_app(app):
+        pass
 
+
+from config_celery import CeleryConfig
 
 config = {
+    'celery'     : CeleryConfig,
     'development': DevelopmentConfig,
-    'testing': TestingConfig,
-    'production': Production,
-    'default': DevelopmentConfig
+    'test'       : TestConfig,
+    'default'    : DevelopmentConfig
 }

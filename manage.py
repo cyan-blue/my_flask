@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import os
 from flask import Flask, current_app
-from app import create_app
+from app import create_app, db
 from flask.ext.script import Manager, Shell
-
+from config import config
 
 if os.path.exists('.env'):
     print('Importing environment from .env...')
@@ -20,6 +20,26 @@ manager = Manager(app)
 
 def make_shell_context():
     return dict(app=app)
+
+
+def create_app_for_manager(config_name=None):
+    print "app config name: %s\n" % config_name
+    if config_name is not None:
+        if config_name in config.keys():
+            pass
+        else:
+            print "Wrong app config name: %s. Use default instead." % config_name
+            config_name = 'default'
+    else:
+        config_name = 'default'
+
+    app = create_app(config_name)
+    return app
+
+
+manager = Manager(create_app_for_manager)
+manager.add_option(
+    '-c', '--config', help='config_name: development,test,production or default', dest='config_name', required=False)
 
 
 manager.add_command("shell", Shell(make_context=make_shell_context))
@@ -57,7 +77,6 @@ def list_routes():
 def deploy():
     """Run deployment tasks."""
     pass
-
 
 if __name__ == '__main__':
     manager.run()

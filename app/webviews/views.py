@@ -5,12 +5,13 @@ from flask.ext.login import LoginManager
 from flask.ext.login import UserMixin, LoginManager, \
     login_user, logout_user
 import pdb
-
+from ..tasks import send_async_email
 @webviews.route("/")
 @webviews.route("/index/")
 def landing():
-        print "index"
-        return render_template("webviews/index.html")
+    send_async_email.delay("907790764@qq.com", 'Some one comes',
+               'auth/email/confirm')
+    return render_template("webviews/index.html")
 
 @webviews.route('/te')
 def index():
